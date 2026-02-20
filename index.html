@@ -1,0 +1,667 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Job Log</title>
+  <meta name="theme-color" content="#0f172a" />
+  <style>
+    /* ===== Theme ===== */
+    :root{
+      --bg: #0b1220;
+      --surface: rgba(255,255,255,.06);
+      --surface-2: rgba(255,255,255,.10);
+      --border: rgba(255,255,255,.12);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.70);
+      --brand: #22c55e;      /* emerald */
+      --brand-2: #38bdf8;    /* sky */
+      --danger: #fb7185;     /* rose */
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 18px;
+      --radius-sm: 12px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      color-scheme: dark;
+    }
+
+    /* If user prefers light mode, keep a pleasant light theme */
+    @media (prefers-color-scheme: light){
+      :root{
+        --bg: #f6f7fb;
+        --surface: rgba(2,6,23,.04);
+        --surface-2: rgba(2,6,23,.06);
+        --border: rgba(2,6,23,.12);
+        --text: rgba(2,6,23,.92);
+        --muted: rgba(2,6,23,.68);
+        --shadow: 0 12px 30px rgba(2,6,23,.10);
+        color-scheme: light;
+      }
+    }
+
+    *{ box-sizing: border-box; }
+    body{
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(1200px 600px at 10% 0%, rgba(56,189,248,.22), transparent 55%),
+        radial-gradient(900px 500px at 85% 15%, rgba(34,197,94,.20), transparent 50%),
+        radial-gradient(900px 600px at 40% 110%, rgba(251,113,133,.14), transparent 55%),
+        var(--bg);
+      color: var(--text);
+      padding: 18px;
+    }
+
+    a { color: inherit; }
+    .container{
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      gap: 14px;
+    }
+
+    header{
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      padding: 14px 14px 6px;
+    }
+    .title{
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .logo{
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background:
+        linear-gradient(135deg, rgba(56,189,248,.9), rgba(34,197,94,.85));
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,.18);
+    }
+    h1{
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: .2px;
+    }
+    .subtitle{
+      margin: 2px 0 0;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .pillbar{
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .pill{
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      box-shadow: 0 8px 18px rgba(0,0,0,.15);
+      font-size: 12px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .pill strong{
+      color: var(--text);
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .card{
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, var(--surface), rgba(255,255,255,.02));
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .card-inner{
+      padding: 14px;
+    }
+
+    /* ===== Form ===== */
+    form{
+      display: grid;
+      grid-template-columns: repeat(6, minmax(110px, 1fr));
+      gap: 12px;
+      align-items: end;
+    }
+    label{
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    input, button{
+      width: 100%;
+      padding: 11px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.03);
+      color: var(--text);
+      outline: none;
+      transition: transform .05s ease, border-color .15s ease, background .15s ease;
+    }
+    input:focus{
+      border-color: rgba(56,189,248,.65);
+      box-shadow: 0 0 0 4px rgba(56,189,248,.14);
+      background: rgba(255,255,255,.05);
+    }
+    input[type="number"]{
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .btnrow{
+      display: flex;
+      gap: 10px;
+    }
+    button{
+      cursor: pointer;
+      font-weight: 700;
+    }
+    button:active{ transform: translateY(1px); }
+
+    .primary{
+      background: linear-gradient(135deg, rgba(34,197,94,.95), rgba(56,189,248,.85));
+      border-color: rgba(255,255,255,.18);
+      color: rgba(2,6,23,.92);
+    }
+    .ghost{
+      background: rgba(255,255,255,.03);
+    }
+    .danger{
+      background: rgba(251,113,133,.14);
+      border-color: rgba(251,113,133,.35);
+      color: var(--text);
+    }
+
+    /* ===== Toolbar ===== */
+    .toolbar{
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      padding: 12px 14px;
+      border-top: 1px solid var(--border);
+      background: rgba(0,0,0,.10);
+    }
+    .toolbar .left, .toolbar .right{
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    #search{
+      min-width: 220px;
+    }
+
+    /* ===== Table ===== */
+    .tablewrap{
+      width: 100%;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    table{
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px; /* keeps columns readable; wrapper scrolls on mobile */
+    }
+    thead th{
+      position: sticky;
+      top: 0;
+      background: rgba(15,23,42,.55);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 10px;
+      text-align: left;
+      font-size: 12px;
+      color: var(--muted);
+      user-select: none;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    tbody td{
+      padding: 12px 10px;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      font-size: 14px;
+      vertical-align: top;
+    }
+    tbody tr:hover{
+      background: rgba(255,255,255,.035);
+    }
+    td.right{ text-align: right; font-variant-numeric: tabular-nums; }
+    td.mono{ font-family: var(--mono); }
+
+    .row-actions{
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+    .mini{
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.03);
+    }
+    .mini.del{
+      border-color: rgba(251,113,133,.35);
+      background: rgba(251,113,133,.12);
+    }
+
+    .empty{
+      padding: 16px 14px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 980px){
+      body{ padding: 14px; }
+      form{ grid-template-columns: 1fr 1fr; }
+      #search{ min-width: 160px; flex: 1 1 160px; }
+    }
+    @media (max-width: 520px){
+      header{ padding: 10px 10px 0; }
+      .card-inner{ padding: 12px; }
+      form{ grid-template-columns: 1fr; }
+      .btnrow{ flex-direction: column; }
+      table{ min-width: 680px; } /* a little smaller on tiny screens */
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header class="card">
+      <div class="card-inner" style="display:flex; gap:14px; align-items:center; justify-content:space-between; flex-wrap:wrap;">
+        <div class="title">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <h1>Job Log</h1>
+            <div class="subtitle">Log Date, Job #, Crew, Dollar Amount, Hours Worked • Saved locally in your browser</div>
+          </div>
+        </div>
+        <div class="pillbar">
+          <div class="pill" id="countPill">Entries: <strong>0</strong></div>
+          <div class="pill" id="totalsPill">Totals: <strong>$0.00</strong> • <strong>0.00</strong> hrs</div>
+        </div>
+      </div>
+    </header>
+
+    <section class="card">
+      <div class="card-inner">
+        <form id="logForm" autocomplete="off">
+          <div>
+            <label for="date">Date</label>
+            <input id="date" name="date" type="date" required />
+          </div>
+
+          <div>
+            <label for="jobNumber">Job Number</label>
+            <input id="jobNumber" name="jobNumber" type="text" placeholder="e.g., 12345" required />
+          </div>
+
+          <div>
+            <label for="crew">Crew</label>
+            <input id="crew" name="crew" type="text" placeholder="e.g., A / Melt / Line 2" required />
+          </div>
+
+          <div>
+            <label for="dollars">Dollar Amount</label>
+            <input id="dollars" name="dollars" type="number" inputmode="decimal" step="0.01" min="0" placeholder="0.00" required />
+          </div>
+
+          <div>
+            <label for="hours">Hours Worked</label>
+            <input id="hours" name="hours" type="number" inputmode="decimal" step="0.01" min="0" placeholder="0.00" required />
+          </div>
+
+          <div class="btnrow">
+            <button class="primary" type="submit">Add Entry</button>
+            <button class="ghost" type="button" id="resetBtn">Reset</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="toolbar">
+        <div class="left">
+          <input id="search" type="search" placeholder="Search job/crew/date…" />
+        </div>
+        <div class="right">
+          <button type="button" class="ghost" id="exportBtn">Export CSV</button>
+          <button type="button" class="danger" id="clearBtn">Clear All</button>
+        </div>
+      </div>
+
+      <div class="tablewrap">
+        <table id="logTable">
+          <thead>
+            <tr>
+              <th data-key="date">Date ↕</th>
+              <th data-key="jobNumber">Job # ↕</th>
+              <th data-key="crew">Crew ↕</th>
+              <th data-key="dollars" style="text-align:right;">Dollar Amount ↕</th>
+              <th data-key="hours" style="text-align:right;">Hours Worked ↕</th>
+              <th class="nowrap" style="text-align:right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+        <div class="empty" id="emptyState" style="display:none;"></div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    (function () {
+      const STORAGE_KEY = "job_log_entries_v2";
+
+      const form = document.getElementById("logForm");
+      const dateEl = document.getElementById("date");
+      const jobEl = document.getElementById("jobNumber");
+      const crewEl = document.getElementById("crew");
+      const dollarsEl = document.getElementById("dollars");
+      const hoursEl = document.getElementById("hours");
+
+      const resetBtn = document.getElementById("resetBtn");
+      const exportBtn = document.getElementById("exportBtn");
+      const clearBtn = document.getElementById("clearBtn");
+      const searchEl = document.getElementById("search");
+
+      const tbody = document.getElementById("tbody");
+      const emptyState = document.getElementById("emptyState");
+
+      const countPill = document.getElementById("countPill");
+      const totalsPill = document.getElementById("totalsPill");
+
+      const table = document.getElementById("logTable");
+      const headers = table.querySelectorAll("th[data-key]");
+
+      let entries = load();
+      let sortKey = "date";
+      let sortDir = "desc"; // "asc" or "desc"
+      let searchTerm = "";
+
+      // Default date = today (local)
+      if (!dateEl.value) {
+        const d = new Date();
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, "0");
+        const dd = String(d.getDate()).padStart(2, "0");
+        dateEl.value = `${yyyy}-${mm}-${dd}`;
+      }
+
+      render();
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const date = (dateEl.value || "").trim();
+        const jobNumber = (jobEl.value || "").trim();
+        const crew = (crewEl.value || "").trim();
+        const dollars = Number(dollarsEl.value);
+        const hours = Number(hoursEl.value);
+
+        if (!date || !jobNumber || !crew || !isFinite(dollars) || !isFinite(hours)) {
+          alert("Please fill out all fields correctly.");
+          return;
+        }
+
+        const entry = {
+          id: cryptoRandomId(),
+          date,
+          jobNumber,
+          crew,
+          dollars: round2(dollars),
+          hours: round2(hours),
+          createdAt: Date.now()
+        };
+
+        entries.unshift(entry);
+        save(entries);
+
+        // keep date, reset other fields for faster logging
+        jobEl.value = "";
+        crewEl.value = "";
+        dollarsEl.value = "";
+        hoursEl.value = "";
+        jobEl.focus();
+
+        render();
+      });
+
+      resetBtn.addEventListener("click", () => {
+        jobEl.value = "";
+        crewEl.value = "";
+        dollarsEl.value = "";
+        hoursEl.value = "";
+        jobEl.focus();
+      });
+
+      clearBtn.addEventListener("click", () => {
+        if (!confirm("Clear ALL entries? This cannot be undone.")) return;
+        entries = [];
+        save(entries);
+        render();
+      });
+
+      exportBtn.addEventListener("click", () => {
+        const rows = getFilteredSorted();
+        const csv = toCSV(rows);
+        downloadTextFile(csv, `job-log_${todayStamp()}.csv`, "text/csv;charset=utf-8");
+      });
+
+      searchEl.addEventListener("input", () => {
+        searchTerm = (searchEl.value || "").trim().toLowerCase();
+        render();
+      });
+
+      headers.forEach((th) => {
+        th.addEventListener("click", () => {
+          const key = th.getAttribute("data-key");
+          if (!key) return;
+
+          if (sortKey === key) {
+            sortDir = sortDir === "asc" ? "desc" : "asc";
+          } else {
+            sortKey = key;
+            sortDir = key === "date" ? "desc" : "asc";
+          }
+          render();
+        });
+      });
+
+      function render() {
+        const rows = getFilteredSorted();
+
+        // Totals (based on filtered rows)
+        const totalDollars = rows.reduce((sum, r) => sum + Number(r.dollars || 0), 0);
+        const totalHours = rows.reduce((sum, r) => sum + Number(r.hours || 0), 0);
+
+        countPill.innerHTML = `Entries: <strong>${rows.length}</strong>`;
+        totalsPill.innerHTML = `Totals: <strong>${formatMoney(totalDollars)}</strong> • <strong>${round2(totalHours).toFixed(2)}</strong> hrs`;
+
+        tbody.innerHTML = "";
+
+        if (rows.length === 0) {
+          emptyState.style.display = "block";
+          emptyState.textContent = entries.length === 0
+            ? "No entries yet. Add your first one above."
+            : "No matches for your search.";
+          return;
+        } else {
+          emptyState.style.display = "none";
+        }
+
+        for (const r of rows) {
+          const tr = document.createElement("tr");
+
+          tr.appendChild(tdText(r.date, "mono"));
+          tr.appendChild(tdText(r.jobNumber, "mono"));
+          tr.appendChild(tdText(r.crew));
+          tr.appendChild(tdText(formatMoney(r.dollars), "right"));
+          tr.appendChild(tdText(Number(r.hours).toFixed(2), "right"));
+
+          const actionsTd = document.createElement("td");
+          actionsTd.style.textAlign = "right";
+
+          const wrap = document.createElement("div");
+          wrap.className = "row-actions";
+
+          const delBtn = document.createElement("button");
+          delBtn.type = "button";
+          delBtn.className = "mini del";
+          delBtn.textContent = "Delete";
+          delBtn.addEventListener("click", () => {
+            if (!confirm(`Delete entry for Job ${r.jobNumber} on ${r.date}?`)) return;
+            entries = entries.filter(x => x.id !== r.id);
+            save(entries);
+            render();
+          });
+
+          wrap.appendChild(delBtn);
+          actionsTd.appendChild(wrap);
+          tr.appendChild(actionsTd);
+
+          tbody.appendChild(tr);
+        }
+      }
+
+      function getFilteredSorted() {
+        let rows = [...entries];
+
+        if (searchTerm) {
+          rows = rows.filter(r =>
+            String(r.jobNumber).toLowerCase().includes(searchTerm) ||
+            String(r.crew).toLowerCase().includes(searchTerm) ||
+            String(r.date).toLowerCase().includes(searchTerm)
+          );
+        }
+
+        rows.sort((a, b) => compare(a, b, sortKey, sortDir));
+        return rows;
+      }
+
+      function compare(a, b, key, dir) {
+        const mul = dir === "asc" ? 1 : -1;
+        const av = a[key];
+        const bv = b[key];
+
+        if (key === "date") {
+          // yyyy-mm-dd string compare works for ISO dates
+          return String(av).localeCompare(String(bv)) * mul;
+        }
+        if (key === "dollars" || key === "hours") {
+          return (Number(av) - Number(bv)) * mul;
+        }
+        return String(av).localeCompare(String(bv), undefined, { numeric: true, sensitivity: "base" }) * mul;
+      }
+
+      function tdText(text, cls) {
+        const td = document.createElement("td");
+        td.textContent = text ?? "";
+        if (cls) td.className = cls;
+        return td;
+      }
+
+      function load() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return [];
+          const data = JSON.parse(raw);
+          if (!Array.isArray(data)) return [];
+          return data.map(x => ({
+            id: String(x.id || cryptoRandomId()),
+            date: String(x.date || ""),
+            jobNumber: String(x.jobNumber || ""),
+            crew: String(x.crew || ""),
+            dollars: Number(x.dollars || 0),
+            hours: Number(x.hours || 0),
+            createdAt: Number(x.createdAt || Date.now())
+          })).filter(x => x.date && x.jobNumber && x.crew);
+        } catch {
+          return [];
+        }
+      }
+
+      function save(data) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      }
+
+      function toCSV(rows) {
+        const header = ["Date","Job Number","Crew","Dollar Amount","Hours Worked"];
+        const lines = [header.join(",")];
+
+        for (const r of rows) {
+          lines.push([
+            csvCell(r.date),
+            csvCell(r.jobNumber),
+            csvCell(r.crew),
+            csvCell(Number(r.dollars).toFixed(2)),
+            csvCell(Number(r.hours).toFixed(2))
+          ].join(","));
+        }
+        return lines.join("\n");
+      }
+
+      function csvCell(value) {
+        const s = String(value ?? "");
+        const escaped = s.replace(/"/g, '""');
+        if (/[",\n]/.test(escaped)) return `"${escaped}"`;
+        return escaped;
+      }
+
+      function downloadTextFile(text, filename, mime) {
+        const blob = new Blob([text], { type: mime });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      function formatMoney(n) {
+        const num = Number(n || 0);
+        return num.toLocaleString(undefined, { style: "currency", currency: "USD" });
+      }
+
+      function round2(n) {
+        return Math.round((Number(n) + Number.EPSILON) * 100) / 100;
+      }
+
+      function todayStamp() {
+        const d = new Date();
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, "0");
+        const dd = String(d.getDate()).padStart(2, "0");
+        return `${yyyy}-${mm}-${dd}`;
+      }
+
+      function cryptoRandomId() {
+        if (window.crypto && crypto.getRandomValues) {
+          const buf = new Uint32Array(2);
+          crypto.getRandomValues(buf);
+          return `${buf[0].toString(16)}${buf[1].toString(16)}`;
+        }
+        return String(Date.now()) + "_" + Math.random().toString(16).slice(2);
+      }
+    })();
+  </script>
+</body>
+</html>
