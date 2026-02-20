@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Weekly Job Log</title>
+  <meta name="theme-color" content="#0f172a" />
+  <style>
+    :root{
+      --bg: #0b1220;
+      --surface: rgba(255,255,255,.06);
+      --surface2: rgba(255,255,255,.09);
+      --border: rgba(255,255,255,.12);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.70);
+      --brand: #22c55e;
+      --brand2: #38bdf8;
+      --danger: #fb7185;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 18px;
+      --radius-sm: 12px;
+      color-scheme: dark;
+    }
+    @media (prefers-color-scheme: light){
+      :root{
+        --bg: #f6f7fb;
+        --surface: rgba(2,6,23,.04);
+        --surface2: rgba(2,6,23,.06);
+        --border: rgba(2,6,23,.12);
+        --text: rgba(2,6,23,.92);
+        --muted: rgba(2,6,23,.70);
+        --shadow: 0 12px 30px rgba(2,6,23,.10);
+        color-scheme: light;
+      }
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(1200px 600px at 10% 0%, rgba(56,189,248,.22), transparent 55%),
+        radial-gradient(900px 500px at 85% 15%, rgba(34,197,94,.20), transparent 50%),
+        var(--bg);
+      color:var(--text);
+      padding:16px;
+    }
+    .container{ max-width:1100px; margin:0 auto; display:grid; gap:14px; }
+    .card{
+      border:1px solid var(--border);
+      background: linear-gradient(180deg, var(--surface), rgba(255,255,255,.02));
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card-inner{ padding:14px; }
+    h1{ margin:0; font-size:20px; }
+    .subtitle{ font-size:12px; color:var(--muted); margin-top:4px; }
+
+    form{
+      display:grid;
+      grid-template-columns: repeat(5, minmax(110px, 1fr));
+      gap:12px;
+      align-items:end;
+    }
+    label{ display:block; font-size:12px; color:var(--muted); margin-bottom:6px; }
+    input, select, textarea, button{
+      width:100%;
+      padding:11px 12px;
+      border-radius: var(--radius-sm);
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.03);
+      color:var(--text);
+      outline:none;
+    }
+    textarea{ min-height:42px; resize:vertical; }
+    input[type="number"]{ text-align:right; }
+
+    button{ cursor:pointer; font-weight:800; }
+    .primary{
+      background: linear-gradient(135deg, rgba(34,197,94,.95), rgba(56,189,248,.85));
+      border-color: rgba(255,255,255,.18);
+      color: rgba(2,6,23,.92);
+    }
+    .ghost{ background: rgba(255,255,255,.03); }
+    .danger{
+      background: rgba(251,113,133,.14);
+      border-color: rgba(251,113,133,.35);
+    }
+
+    .toolbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      padding:12px 14px;
+      border-top:1px solid var(--border);
+      background: rgba(0,0,0,.10);
+    }
+
+    .report{
+      display:grid;
+      grid-template-columns: repeat(4, minmax(160px, 1fr));
+      gap:10px;
+      padding:12px 14px;
+      border-top:1px solid var(--border);
+      background: rgba(0,0,0,.06);
+    }
+    .metric{
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.03);
+      border-radius:14px;
+      padding:10px 12px;
+    }
+    .metric .k{ font-size:12px; color:var(--muted); }
+    .metric .v{ margin-top:4px; font-size:18px; font-weight:900; }
+
+    .tablewrap{ overflow:auto; }
+    table{ width:100%; border-collapse:collapse; min-width:1000px; }
+    th, td{
+      padding:12px 10px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      text-align:left;
+      font-size:14px;
+    }
+    th{ font-size:12px; color:var(--muted); }
+    td.right{ text-align:right; }
+    td.notes{ white-space:normal; min-width:250px; }
+
+    @media (max-width:980px){
+      form{ grid-template-columns:1fr 1fr; }
+      .report{ grid-template-columns:1fr 1fr; }
+    }
+    @media (max-width:520px){
+      form{ grid-template-columns:1fr; }
+      .report{ grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <div class="card">
+    <div class="card-inner">
+      <h1>Weekly Tractor Wash Log</h1>
+      <div class="subtitle">Greenway Tractor Wash Crew • 2000+ John Deere models • Weekly totals + hourly rate</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-inner">
+      <form id="logForm">
+        <div>
+          <label>Date</label>
+          <input id="date" type="date" required />
+        </div>
+
+        <div>
+          <label>Crew</label>
+          <input id="crew" type="text" required />
+        </div>
+
+        <div>
+          <label>Dollar Amount</label>
+          <input id="dollars" type="number" step="0.01" min="0" required />
+        </div>
+
+        <div>
+          <label>Hours Worked</label>
+          <input id="hours" type="number" step="0.01" min="0" required />
+        </div>
+
+        <div>
+          <label>Equipment Type (2000+)</label>
+          <select id="equipment" required></select>
+        </div>
+
+        <div style="grid-column:1 / -1;">
+          <label>Additional Notes</label>
+          <textarea id="notes"></textarea>
+        </div>
+
+        <div style="grid-column:1 / -1; display:flex; gap:10px;">
+          <button class="primary" type="submit">Add Entry</button>
+          <button class="ghost" type="button" id="resetBtn">Reset</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="toolbar">
+      <div>
+        <label>Week</label>
+        <input id="weekSelect" type="week" />
+        <button class="primary" id="applyWeekBtn" type="button">Apply</button>
+      </div>
+      <div>
+        <button class="danger" id="clearBtn" type="button">Clear All</button>
+      </div>
+    </div>
+
+    <div class="report">
+      <div class="metric"><div class="k">Weekly Dollars</div><div class="v" id="mDollars">$0.00</div></div>
+      <div class="metric"><div class="k">Weekly Hours</div><div class="v" id="mHours">0.00</div></div>
+      <div class="metric"><div class="k">Hourly $</div><div class="v" id="mRate">$0.00</div></div>
+      <div class="metric"><div class="k">Entries</div><div class="v" id="mCount">0</div></div>
+    </div>
+
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Crew</th>
+            <th>Dollar Amount</th>
+            <th>Hours</th>
+            <th>Equipment</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = "tractor_wash_log_v3";
+
+const equipmentList = [
+  "1023E","1025R",
+  "2025R","2032R","2038R",
+  "3025E","3032E","3038E","3033R","3039R","3046R",
+  "4044M","4052M","4066M",
+  "5050E","5060E","5067E","5075E","5090E","5100E",
+  "5100M","5115M","5125M","5130M","5140M",
+  "6105E","6110E","6120E",
+  "6105M","6110M","6120M","6130M","6140M","6155M","6175M",
+  "6110R","6120R","6130R","6145R","6155R","6175R","6195R",
+  "7R 210","7R 230","7R 250","7R 270","7R 290","7R 310","7R 330",
+  "8R 230","8R 250","8R 280","8R 310","8R 340","8R 370",
+  "8RT 310","8RT 340","8RT 370",
+  "9R 390","9R 410","9R 490","9R 540","9R 590",
+  "9RT 470","9RT 520","9RT 570",
+  "Other"
+];
+
+const equipmentSelect = document.getElementById("equipment");
+equipmentList.forEach(model => {
+  const opt = document.createElement("option");
+  opt.value = model;
+  opt.textContent = model;
+  equipmentSelect.appendChild(opt);
+});
+
+const form = document.getElementById("logForm");
+const tbody = document.getElementById("tbody");
+const weekSelect = document.getElementById("weekSelect");
+
+let entries = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+
+document.getElementById("date").valueAsDate = new Date();
+weekSelect.value = getCurrentWeek();
+
+form.addEventListener("submit", e => {
+  e.preventDefault();
+  const entry = {
+    date: document.getElementById("date").value,
+    crew: document.getElementById("crew").value,
+    dollars: parseFloat(document.getElementById("dollars").value),
+    hours: parseFloat(document.getElementById("hours").value),
+    equipment: equipmentSelect.value,
+    notes: document.getElementById("notes").value
+  };
+  entries.push(entry);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+  form.reset();
+  document.getElementById("date").valueAsDate = new Date();
+  render();
+});
+
+document.getElementById("clearBtn").addEventListener("click", () => {
+  if(confirm("Clear all entries?")){
+    entries = [];
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+    render();
+  }
+});
+
+document.getElementById("applyWeekBtn").addEventListener("click", render);
+
+function render(){
+  const week = weekSelect.value;
+  const filtered = entries.filter(e => getWeek(e.date) === week);
+
+  let totalD = 0;
+  let totalH = 0;
+
+  tbody.innerHTML = "";
+  filtered.forEach(e => {
+    totalD += e.dollars;
+    totalH += e.hours;
+    tbody.innerHTML += `
+      <tr>
+        <td>${e.date}</td>
+        <td>${e.crew}</td>
+        <td class="right">$${e.dollars.toFixed(2)}</td>
+        <td class="right">${e.hours.toFixed(2)}</td>
+        <td>${e.equipment}</td>
+        <td class="notes">${e.notes || ""}</td>
+      </tr>
+    `;
+  });
+
+  document.getElementById("mDollars").textContent = "$" + totalD.toFixed(2);
+  document.getElementById("mHours").textContent = totalH.toFixed(2);
+  document.getElementById("mRate").textContent = totalH > 0 ? "$" + (totalD/totalH).toFixed(2) : "$0.00";
+  document.getElementById("mCount").textContent = filtered.length;
+}
+
+function getCurrentWeek(){
+  const now = new Date();
+  const onejan = new Date(now.getFullYear(),0,1);
+  const week = Math.ceil((((now - onejan) / 86400000) + onejan.getDay()+1)/7);
+  return now.getFullYear() + "-W" + String(week).padStart(2,"0");
+}
+
+function getWeek(dateStr){
+  const d = new Date(dateStr);
+  const onejan = new Date(d.getFullYear(),0,1);
+  const week = Math.ceil((((d - onejan) / 86400000) + onejan.getDay()+1)/7);
+  return d.getFullYear() + "-W" + String(week).padStart(2,"0");
+}
+
+render();
+</script>
+</body>
+</html>
